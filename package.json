@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "node-static": "0.7.11",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
     "react-scripts": "3.0.1"
   },
+  "main": "server.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "node server"
   },
   "eslintConfig": {
     "extends": "react-app"
