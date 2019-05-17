@@ -11,11 +11,11 @@
   "main": "server.js",
   "scripts": {
     "app-start": "react-scripts start",
-    "app-build": "react-scripts build",
     "app-test": "react-scripts test",
     "app-eject": "react-scripts eject",
-    "serve": "node server",
-    "test": "mocha test.js"
+    "build": "sh ./scripts/build.sh",
+    "start": "node server",
+    "test": "mocha --reporter mocha-tap-reporter test.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -33,6 +33,7 @@
     ]
   },
   "devDependencies": {
-    "mocha": "6.1.4"
+    "mocha": "6.1.4",
+    "mocha-tap-reporter": "0.1.3"
   }
 }

@@ -1,0 +1,70 @@
+version: 2.1
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:lts
+    working_directory: /home/circleci/hwsw-cicd-demo
+
+jobs:
+  build:
+    executor: node-executor
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-dependencies-{{ checksum "package.json" }}
+            - v2-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v2-dependencies-{{ checksum "package.json" }}
+
+      - run: npm run build
+      
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - hwsw-cicd-demo
+  
+  test:
+    executor: node-executor
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: npm test
+      - run: npm run app-test
+
+  deploy:
+    executor: node-executor
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3
+            sudo apt-get -y -qq install python-pip 
+            pip install awsebcli --upgrade --user
+      - run: git add -f build
+      - run: ~/.local/bin/eb init -r eu-west-1 --platform "64bit Amazon Linux 2018.03 v4.8.3 running Node.js"
+      - run: ~/.local/bin/eb deploy --staged
+
+workflows:
+  version: 2.1
+  build-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
