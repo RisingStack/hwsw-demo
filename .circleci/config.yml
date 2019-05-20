@@ -13,15 +13,15 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v2-dependencies-{{ checksum "package.json" }}
-            - v2-dependencies-
+            - v3-dependencies-{{ checksum "package.json" }}
+            - v3-dependencies-
 
       - run: npm install
 
       - save_cache:
           paths:
             - node_modules
-          key: v2-dependencies-{{ checksum "package.json" }}
+          key: v3-dependencies-{{ checksum "package.json" }}
 
       - run: npm run build
 
@@ -38,11 +38,22 @@ jobs:
       - run: npm test
       - run: npm run app-test
 
+  test-echo:
+    executor: node-executor
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: ls
+      - run: echo "alma"
+
 workflows:
   version: 2.1
   build-deploy:
     jobs:
       - build
       - test:
+          requires:
+            - build
+      - test-echo:
           requires:
             - build
